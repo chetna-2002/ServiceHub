@@ -1,5 +1,6 @@
 import express, { Router } from 'express'
-import { cancelBooking, createBooking, getBookingsForProvider, getMyBookings ,updateBookingStatus} from '../controllers/booking.controller.js';
+import { cancelBooking, createBooking, getBookingsForProvider, getMyBookings} from '../controllers/booking.controller.js';
+import {updateBookingStatus} from '../controllers/status.controller.js'
 import { authenticate } from '../auth.middleware.js';
 const router = express.Router();
 
