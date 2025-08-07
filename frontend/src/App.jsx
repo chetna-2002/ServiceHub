@@ -6,10 +6,12 @@ import Register from "./pages/Register";
 import Services from "./pages/services";
 import Navbar from "../components/navbar";
 
+
 function App() {
   return (
     <>
-      <Router>
+  
+    <Router>
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -18,6 +20,8 @@ function App() {
           <Route path="/services" element={<Services />} />
         </Routes>
       </Router>
+
+      
     </>
   );
 }

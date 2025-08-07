@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useForm } from "react-hook-form"
 import signup from '../../components/Signup';
+import { useNavigate } from 'react-router-dom';
+
 
 const Register = () => {
   const [role, setRole] = useState("customer");
@@ -10,6 +12,7 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const navigate= useNavigate();
   
 
  const onSubmit = async (data) => {
@@ -19,7 +22,11 @@ const Register = () => {
     data.skills = data.skills.split(',').map(skill => skill.trim());
   }
 
-  await signup(data);
+ const result =  await signup(data);
+
+ if(result?.success){
+    navigate('/login')
+ }
 }
 
   

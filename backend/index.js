@@ -10,10 +10,16 @@ import { bookingRouter } from './routes/booking.routes.js';
 connectDB();
 const app= express()
 app.use(express.json())
+
 app.use(cors({
-  origin: ' http://localhost:5173/',
+  origin: 'http://localhost:5173',
   credentials: true
 }));
+app.use((err, req, res, next) => {
+  console.error("Unhandled Error:", err);
+  res.status(500).json({ error: "Something went wrong!" });
+});
+
 
 
 app.use("/api/v1/auth", authRouter)
