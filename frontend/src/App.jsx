@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Services from "./pages/services";
 import Navbar from "../components/navbar";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/profile" element={<Profile/>} />
+
         </Routes>
       </Router>
 

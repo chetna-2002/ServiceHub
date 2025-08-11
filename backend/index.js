@@ -22,8 +22,8 @@ app.use((err, req, res, next) => {
 
 
 
-app.use("/api/v1/auth", authRouter)
-app.use("/api/v1/service", serviceRouter)
+app.use("/api/v1/auth",authRouter)
+app.use("/api/v1/service",serviceRouter)
 app.use("/api/v1/booking",bookingRouter)
 
 
