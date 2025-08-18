@@ -8,15 +8,12 @@ import jwt from 'jsonwebtoken'
 export const signupUser = async (req, res) => {
   try {
     const {
-      fullname,
+      name,
       email,
       password,
       phone,
       location,
-      bio,
       role,
-      skills,
-      hourlyRate,
     } = req.body;
 
     const existingUser = await User.findOne({email});
@@ -26,21 +23,22 @@ export const signupUser = async (req, res) => {
     const hashPass = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      fullname,
+      name,
       email,
       password: hashPass,
       phone,
       location,
       role,
-      bio: role === "provider" ? bio : undefined,
-      hourlyRate: role === "provider" ? hourlyRate : undefined,
-      skills: role === "provider" ? skills : undefined,
+    
     });
+    
     res.status(201).json({
       message: "user created successfully ",
     });
   } catch (error) {
+console.log(error)
     res.status(500).json({
+      
       message: " server error ",
     });
   }

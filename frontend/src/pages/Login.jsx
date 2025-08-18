@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import signin from "../../components/Signin";
+import login from "../../components/Signin";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    const result = await signin(data);
+    const result = await login(data);
     if (result?.success) {
       // You can store token in localStorage here if needed:
       // localStorage.setItem("token", result.data.token);
@@ -51,15 +51,3 @@ const Login = () => {
 };
 
 export default Login;
-
-// User types into input
-//      ↓
-// (register) tells useForm: track this field + apply rules
-//      ↓
-// User clicks Submit
-//      ↓
-// handleSubmit runs → checks all rules
-//      ↓
-// If all good → calls onSubmit(data)
-// If not → puts error messages in formState.errors
-

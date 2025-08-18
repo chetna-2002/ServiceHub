@@ -1,11 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Services from "./pages/services";
-import Navbar from "../components/navbar";
-import Profile from "./pages/Profile";
+import Profile from './pages/Profile'
+import LandingPage from "./pages/Landing";
 
 
 function App() {
@@ -13,9 +12,10 @@ function App() {
     <>
   
     <Router>
-        <Navbar />
+    
+      
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/services" element={<Services />} />

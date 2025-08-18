@@ -4,6 +4,7 @@ import {toast} from "react-hot-toast"
 
 
 const signup = async(formData)=>{
+  console.log(formData)
     try {
     const response = await API.post("/auth/signup", formData);
     console.log("Success:", response.data);
