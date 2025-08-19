@@ -10,7 +10,7 @@ export default function LandingPage() {
       <p className="text-lg text-white mb-6">Your one-stop platform to connect customers and service providers.</p>
       <button
         onClick={() => navigate('/register')}
-        className="px-6 py-3 text-2xl bg-white text-blue-600 rounded-lg hover:text-blue-800"
+        className="px-2 py-1 text-xl font-bold bg-white text-blue-600 rounded-lg hover:text-blue-800"
       >
         Explore Now 
       </button>
