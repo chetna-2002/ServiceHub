@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import LocationSelector from "../common/LocationSelector"
+import { signup } from "../../routes/auth"
+import toast from "react-hot-toast"  // ✅ import toast
 
 export default function SignUpPage({ onNavigate }) {
   const [formData, setFormData] = useState({
@@ -40,23 +42,42 @@ export default function SignUpPage({ onNavigate }) {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (formData.password.length < 6) {
-      setPasswordError("Password must be at least 8 characters long")
+      setPasswordError("Password must be at least 6 characters long")
+      toast.error("Password too short")
       return
     }
 
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match")
+      toast.error("Passwords do not match")
       return
     }
 
-    localStorage.setItem("userData", JSON.stringify(formData))
-    onNavigate("login")
+    try {
+      // ✅ Call backend API
+      const res = await signup(formData)
+
+      if (res.success) {
+        localStorage.setItem("userData", JSON.stringify(formData))
+        toast.success("Account created successfully 🎉")
+
+        setTimeout(() => {
+          onNavigate("/login")
+        }, 1000)
+      } else {
+        toast.error(res.message || "Signup failed")
+      }
+    } catch (err) {
+      console.error("Signup error:", err)
+      toast.error("Something went wrong!")
+    }
   }
 
+  // ✅ return stays inside function (no extra } before it)
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">

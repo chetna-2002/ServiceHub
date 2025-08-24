@@ -33,7 +33,7 @@ export const signupUser = async (req, res) => {
     });
     
     res.status(201).json({
-      message: "user created successfully ",
+      message: "user created sucessfully ",
     });
   } catch (error) {
 console.log(error)

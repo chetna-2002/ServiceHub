@@ -5,6 +5,8 @@ import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
+import { toast } from "react-hot-toast"
+import { login } from "../../routes/auth"
 
 export default function LoginPage({ onNavigate, onLogin }) {
   const [formData, setFormData] = useState({
@@ -19,24 +21,44 @@ export default function LoginPage({ onNavigate, onLogin }) {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
 
     // Get stored user data (in real app, this would be an API call)
-    const storedData = localStorage.getItem("userData")
+   
+      // Simple validation - check if identifier matches email or phone
+      try{
+         const storedData = localStorage.getItem("userData")
     if (storedData) {
       const userData = JSON.parse(storedData)
-      // Simple validation - check if identifier matches email or phone
-      if (userData.email === formData.identifier || userData.phone === formData.identifier) {
+        const res= await login(formData);
+         if (userData.email === formData.identifier || userData.phone === formData.identifier) {
+         toast.success(`Welcome back, ${userData.name || "User"} `)
         onLogin(userData)
-      } else {
-        alert("Invalid credentials")
-      }
-    } else {
-      alert("No account found. Please sign up first.")
+      } 
+    }}
+    
+    catch (err) {
+      // 🔹 Step 2: Fallback to localStorage (old logic)
+      const storedData = localStorage.getItem("userData");
+      if (storedData) {
+        const userData = JSON.parse(storedData);
+        if (
+          (userData.email === formData.identifier ||
+            userData.phone === formData.identifier) &&
+          userData.password === formData.password
+        ) {
+          toast.success(`Welcome back, ${userData.name || "User"}!`);
+          onLogin(userData);
+          return;
+        }
+      
     }
-  }
 
+      toast.error(err.response?.data?.msg || "Invalid credentials");
+    }
+  };
+     
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">

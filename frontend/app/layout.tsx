@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'service-hub'
 }
 
 export default function RootLayout({
@@ -25,7 +24,9 @@ html {
 }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body>{children}
+        <Toaster position="top-right" reverseOrder={false} />
+      </body>
     </html>
   )
 }
