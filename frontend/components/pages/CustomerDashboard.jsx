@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import ServiceCard from "../common/ServiceCard"
 import { mockServices } from "../../data/mockData"
+import { Button } from "../ui/button"
+
 
 export default function CustomerDashboard({ user }) {
   const [services, setServices] = useState([])
@@ -38,8 +40,10 @@ export default function CustomerDashboard({ user }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
+        
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Dashboard</h1>
         <p className="text-gray-600">Welcome back, {user.name}! Browse and book services below.</p>
+         
       </div>
 
       {/* My Bookings Section */}

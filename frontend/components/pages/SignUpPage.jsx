@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import LocationSelector from "../common/LocationSelector"
-import { signup } from "../../routes/auth"
-import toast from "react-hot-toast"  // ✅ import toast
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import LocationSelector from "../common/LocationSelector";
+import { signup } from "../../routes/API.auth.jsx";
+import toast from "react-hot-toast"; // ✅ import toast
 
 export default function SignUpPage({ onNavigate }) {
   const [formData, setFormData] = useState({
@@ -20,69 +20,73 @@ export default function SignUpPage({ onNavigate }) {
     state: "",
     city: "",
     role: "customer",
-  })
+  });
 
-  const [passwordError, setPasswordError] = useState("")
+  const [passwordError, setPasswordError] = useState("");
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
+    });
 
     if (e.target.name === "password" || e.target.name === "confirmPassword") {
-      setPasswordError("")
+      setPasswordError("");
     }
-  }
+  };
 
   const handleLocationChange = (location) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       ...location,
-    })
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (formData.password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long")
-      toast.error("Password too short")
-      return
+      setPasswordError("Password must be at least 6 characters long");
+      toast.error("Password too short");
+      return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setPasswordError("Passwords do not match")
-      toast.error("Passwords do not match")
-      return
+      setPasswordError("Passwords do not match");
+      toast.error("Passwords do not match");
+      return;
     }
 
     try {
       // ✅ Call backend API
-      const res = await signup(formData)
 
-      if (res.success) {
-        localStorage.setItem("userData", JSON.stringify(formData))
-        toast.success("Account created successfully 🎉")
+      const res = await signup(formData);
+
+      if (res.message?.includes("success")) {
+        localStorage.setItem("userData", JSON.stringify(res.user));
+        toast.success(res.message);
 
         setTimeout(() => {
-          onNavigate("/login")
-        }, 1000)
+          onNavigate("login");
+        }, 1000);
       } else {
-        toast.error(res.message || "Signup failed")
+        toast.error(res.message || "Signup failed in signup");
       }
-    } catch (err) {
-      console.error("Signup error:", err)
-      toast.error("Something went wrong!")
+    } catch (error) {
+      const errorMessage =
+        error.message || "Something went wrong!";
+        console.log(error)
+        toast.error(errorMessage);
     }
-  }
+  };
 
-  // ✅ return stays inside function (no extra } before it)
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Join ServiceHub</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            Join ServiceHub
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -100,7 +104,7 @@ export default function SignUpPage({ onNavigate }) {
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address (Optional)</Label>
+              <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
                 name="email"
@@ -150,7 +154,9 @@ export default function SignUpPage({ onNavigate }) {
               />
             </div>
 
-            {passwordError && <div className="text-red-500 text-sm">{passwordError}</div>}
+            {passwordError && (
+              <div className="text-red-500 text-sm">{passwordError}</div>
+            )}
 
             <LocationSelector onLocationChange={handleLocationChange} />
 
@@ -199,5 +205,5 @@ export default function SignUpPage({ onNavigate }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

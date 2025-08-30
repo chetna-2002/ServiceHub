@@ -1,42 +1,38 @@
 import mongoose from 'mongoose';
-const Schema= mongoose.Schema
-const ObjectId= mongoose.ObjectId
-
-// models/service.model.js
-
-
 
 const serviceSchema = new mongoose.Schema({
-  title: {
+  serviceTitle: {
     type: String,
     required: true,
     trim: true
   },
-  category: {
-    type: String,
-    required: true,
-    enum: ['Event', 'Cleaning', 'Home Repair', 'Tutoring', 'Others','plumbing'] // can add more categories
-  },
-  description: {
+  bio: {
     type: String,
     required: true,
     trim: true
   },
-  price: {
+  skills: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  hourlyRate: {
     type: Number,
     required: true
   },
-  location: {
+  alternateNumber: {
     type: String,
-    required: true
-  },
-  availability: {
-    type: Boolean,
-    default: true
+    trim: true,
+    validate: {
+      validator: function (v) {
+        return /^(\+?\d{10,15})$/.test(v); // validates phone number (10–15 digits, optional +)
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    }
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',  // user here refer to provider
+    ref: 'User',  // refers to the provider
     required: true
   },
   createdAt: {

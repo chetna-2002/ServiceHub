@@ -1,8 +1,13 @@
-"use client"
+"use client";
 
-import { Button } from "../ui/button"
+import { Button } from "../ui/button";
 
-export default function NavigationBar({ user, onNavigate, onLogout, currentPage }) {
+export default function NavigationBar({
+  user,
+  onNavigate,
+  onLogout,
+  currentPage,
+}) {
   return (
     <nav className="bg-white shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,6 +24,7 @@ export default function NavigationBar({ user, onNavigate, onLogout, currentPage 
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
+               
                 <span className="text-foreground">Hi, {user.name}</span>
                 <Button onClick={onLogout} variant="outline" size="sm">
                   Logout
@@ -26,7 +32,11 @@ export default function NavigationBar({ user, onNavigate, onLogout, currentPage 
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Button onClick={() => onNavigate("login")} variant="ghost" size="sm">
+                <Button
+                  onClick={() => onNavigate("login")}
+                  variant="ghost"
+                  size="sm"
+                >
                   Login
                 </Button>
                 <Button onClick={() => onNavigate("signup")} size="sm">
@@ -38,5 +48,5 @@ export default function NavigationBar({ user, onNavigate, onLogout, currentPage 
         </div>
       </div>
     </nav>
-  )
+  );
 }

@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true
   },
 
@@ -24,13 +23,28 @@ const userSchema = new mongoose.Schema({
 
   phone: {
     type: String,
-    default: ''
+    default: '',
+    required:true,
+    unique: true
   },
+   country: { 
+    type: String, 
+    trim: true ,
+    required:true
 
-  location: {
-    type: String,
-    default: ''
-  },
+   },
+
+    state: { 
+      type: String,
+       trim: true
+       ,required :true
+     },
+
+    city: { type: String,
+       trim: true
+      , required : false 
+    },
+
 
   // bio: {
   //   type: String,
@@ -38,11 +52,11 @@ const userSchema = new mongoose.Schema({
   //   default: ''
   // },
 
-  // role: {
-  //   type: String,
-  //   enum: ['customer', 'provider'],
-  //   default: 'customer'
-  // },
+  role: {
+    type: String,
+    enum: ['customer', 'provider'],
+    default: 'customer'
+  },
 
   // skills: {
   //   type: [String],

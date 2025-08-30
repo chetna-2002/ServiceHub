@@ -336,9 +336,9 @@ export const citiesByState = {
 }
 
 export const getCurrencySymbol = (country) => {
-  return currencyByCountry[country]?.symbol || "$"
+  return currencyByCountry[country]?.symbol || "Rs"
 }
 
 export const getCurrencyCode = (country) => {
-  return currencyByCountry[country]?.code || "USD"
+  return currencyByCountry[country]?.code || "Rupees"
 }

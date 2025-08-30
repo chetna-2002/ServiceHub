@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { toast } from "react-hot-toast"
-import { login } from "../../routes/auth"
+import { login } from "../../routes/API.auth"
 
 export default function LoginPage({ onNavigate, onLogin }) {
   const [formData, setFormData] = useState({
@@ -27,38 +27,23 @@ export default function LoginPage({ onNavigate, onLogin }) {
     // Get stored user data (in real app, this would be an API call)
    
       // Simple validation - check if identifier matches email or phone
-      try{
-         const storedData = localStorage.getItem("userData")
-    if (storedData) {
-      const userData = JSON.parse(storedData)
-        const res= await login(formData);
-         if (userData.email === formData.identifier || userData.phone === formData.identifier) {
-         toast.success(`Welcome back, ${userData.name || "User"} `)
-        onLogin(userData)
-      } 
-    }}
-    
-    catch (err) {
-      // 🔹 Step 2: Fallback to localStorage (old logic)
-      const storedData = localStorage.getItem("userData");
-      if (storedData) {
-        const userData = JSON.parse(storedData);
-        if (
-          (userData.email === formData.identifier ||
-            userData.phone === formData.identifier) &&
-          userData.password === formData.password
-        ) {
-          toast.success(`Welcome back, ${userData.name || "User"}!`);
-          onLogin(userData);
-          return;
-        }
-      
-    }
+     try {
+      // 🔹 Send data to backend login API
+      const res = await login(formData)
 
-      toast.error(err.response?.data?.msg || "Invalid credentials");
+      // Save user/token in localStorage for persistence
+      localStorage.setItem("userData", JSON.stringify(res.user))
+      localStorage.setItem("token", res.token)
+
+      // Show success toast
+      toast.success(`Welcome back, ${res.user.name || "User"}!`)
+
+      // Trigger parent onLogin with user info
+      onLogin(res.user)
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Invalid credentials")
     }
-  };
-     
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
