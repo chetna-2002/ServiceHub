@@ -1,17 +1,19 @@
 import axios from "axios";
 
+// ✅ Set the correct base URL (plural 'services' to match backend routes)
 const API = axios.create({
-  baseURL: "http://localhost:3001/api/v1", // Your Express backend URL
-});// your axios instance
+  baseURL: "http://localhost:3001/api/v1/service",
+});
 
-// Create a new service
+// ------------------- SERVICE API ------------------- //
+
 // Create a new service
 export const createService = async (formData) => {
   try {
-    const token = localStorage.getItem("token"); // get JWT token from local storage
-    const res = await API.post("/service/createservice", formData, {
+    const token = localStorage.getItem("token");
+    const res = await API.post("/createservice", formData, {
       headers: {
-        Authorization: `Bearer ${token}`,  // 👈 send token in headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return res.data;
@@ -20,31 +22,40 @@ export const createService = async (formData) => {
   }
 };
 
-
 // Fetch all services
 export const getService = async () => {
   try {
-    const res = await API.get("/service/allservices");
+    const res = await API.get("/allservices");
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Fetching services failed" };
   }
 };
 
-// Fetch services by user (if customer wants to see only their services)
-export const getMyService = async (userId) => {
+// Fetch services of the logged-in user
+export const getMyServices = async () => {
   try {
-    const res = await API.get(`/service/getmyservice/${userId}`);
+    const token = localStorage.getItem("token");
+    const res = await API.get("/myservices", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (err) {
-    throw err.response?.data || { message: "Fetching user services failed" };
+    throw err.response?.data || { message: "Failed to fetch your services" };
   }
 };
 
 // Update a service
 export const updateService = async (serviceId, formData) => {
   try {
-    const res = await API.put(`/service/update${serviceId}`, formData);
+    const token = localStorage.getItem("token");
+    const res = await API.put(`/update/${serviceId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Service update failed" };
@@ -54,9 +65,14 @@ export const updateService = async (serviceId, formData) => {
 // Delete a service
 export const deleteService = async (serviceId) => {
   try {
-    const res = await API.delete(`/service/deleteservice${serviceId}`);
+    const token = localStorage.getItem("token");
+    const res = await API.delete(`/deleteservice/${serviceId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (err) {
-    throw err.response?.data || { message: "Service delete failed" };
+    throw err.response?.data || { message: "Service deletion failed" };
   }
 };

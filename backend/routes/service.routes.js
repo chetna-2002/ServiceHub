@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/createservice',authenticate, createService)
 router.get('/allservices',getAllServices)
-router.get('/getmyservice', authenticate,getMyServices)
+router.get('/myservices', authenticate,getMyServices)
 router.delete('/deleteservice/:id', authenticate,deleteService)
 router.put('/update/:id',authenticate,updateService)
 router.get('/filter',getFilteredServices)

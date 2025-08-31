@@ -105,7 +105,7 @@ export const updateService = async (req, res) => {
     res.status(200).json({ 
       success: true, 
       message: "Service updated successfully", 
-      updatedService 
+      service : updatedService 
     })
   } catch (error) {
     console.error("Update error:", error)

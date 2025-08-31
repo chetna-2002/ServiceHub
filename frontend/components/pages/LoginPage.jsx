@@ -32,6 +32,8 @@ export default function LoginPage({ onNavigate, onLogin }) {
       const res = await login(formData)
 
       // Save user/token in localStorage for persistence
+      
+
       localStorage.setItem("userData", JSON.stringify(res.user))
       localStorage.setItem("token", res.token)
 
