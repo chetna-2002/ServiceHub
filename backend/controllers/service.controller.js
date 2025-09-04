@@ -1,16 +1,18 @@
 import Service from '../models/service.model.js'
+import User from '../models/user.model.js'
 
 // ✅ Create a new service
 export const createService = async (req, res) => {
   try {
-    const { serviceTitle, bio, skills, hourlyRate, alternateNumber } = req.body
+    const { serviceTitle, bio, skills, hourlyRate } = req.body
 
     const service = new Service({
       serviceTitle,
       bio,
       skills,
       hourlyRate,
-      alternateNumber,
+    
+      
       userId: req.user.userId // from auth middleware
     })
 
@@ -30,7 +32,9 @@ export const createService = async (req, res) => {
 // ✅ Get all services
 export const getAllServices = async (req, res) => {
   try {
-    const services = await Service.find().populate("userId", "name phone")
+    const services = await Service.find().populate("userId", "name phone country state city");
+     
+   
     res.status(200).json({
       success: true,
       message: "Services fetched successfully!",
@@ -41,6 +45,7 @@ export const getAllServices = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" })
   }
 }
+
 
 // ✅ Get logged-in user’s services
 export const getMyServices = async (req, res) => {
@@ -60,6 +65,9 @@ export const getMyServices = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" })
   }
 }
+
+
+
 
 // ✅ Delete a service
 export const deleteService = async (req, res) => {

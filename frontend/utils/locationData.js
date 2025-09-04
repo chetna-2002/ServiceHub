@@ -334,11 +334,10 @@ export const citiesByState = {
   England: ["London", "Manchester", "Birmingham", "Liverpool", "Leeds", "Sheffield"],
   // Add more cities as needed
 }
-
 export const getCurrencySymbol = (country) => {
-  return currencyByCountry[country]?.symbol || "Rs"
-}
+  return currencyByCountry[country]?.symbol || "Rs";
+};
 
 export const getCurrencyCode = (country) => {
-  return currencyByCountry[country]?.code || "Rupees"
-}
+  return currencyByCountry[country]?.code || "INR";
+};

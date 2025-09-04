@@ -1,16 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import LocationSelector from "../common/LocationSelector";
-import { signup } from "../../routes/API.auth.jsx";
-import toast from "react-hot-toast"; // ✅ import toast
+import { useRouter } from "next/navigation"; // ✅ Import Next.js router
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import LocationSelector from "@/components/common/LocationSelector";
+import { signup } from "@/routes/API.auth.jsx";
+import toast from "react-hot-toast";
 
-export default function SignUpPage({ onNavigate }) {
-  const [formData, setFormData] = useState({
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  country: string;
+  state: string;
+  city: string;
+  role: "customer" | "provider";
+}
+
+export default function SignUpPage() {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
@@ -24,7 +39,7 @@ export default function SignUpPage({ onNavigate }) {
 
   const [passwordError, setPasswordError] = useState("");
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -35,14 +50,14 @@ export default function SignUpPage({ onNavigate }) {
     }
   };
 
-  const handleLocationChange = (location) => {
+  const handleLocationChange = (location: Partial<FormData>) => {
     setFormData((prev) => ({
       ...prev,
       ...location,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (formData.password.length < 6) {
@@ -58,25 +73,18 @@ export default function SignUpPage({ onNavigate }) {
     }
 
     try {
-      // ✅ Call backend API
-
       const res = await signup(formData);
 
       if (res.message?.includes("success")) {
-        localStorage.setItem("userData", JSON.stringify(res.user));
+        localStorage.setItem("user", JSON.stringify(res.user));
         toast.success(res.message);
-
-        setTimeout(() => {
-          onNavigate("login");
-        }, 1000);
+        setTimeout(() => router.push("/login"), 1000);
       } else {
-        toast.error(res.message || "Signup failed in signup");
+        toast.error(res.message || "Signup failed");
       }
-    } catch (error) {
-      const errorMessage =
-        error.message || "Something went wrong!";
-        console.log(error)
-        toast.error(errorMessage);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Something went wrong!");
     }
   };
 
@@ -84,12 +92,11 @@ export default function SignUpPage({ onNavigate }) {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">
-            Join ServiceHub
-          </CardTitle>
+          <CardTitle className="text-2xl text-center">Join ServiceHub</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
             <div>
               <Label htmlFor="name">Full Name *</Label>
               <Input
@@ -99,10 +106,10 @@ export default function SignUpPage({ onNavigate }) {
                 required
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter your full name"
               />
             </div>
 
+            {/* Email */}
             <div>
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -111,10 +118,10 @@ export default function SignUpPage({ onNavigate }) {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
               />
             </div>
 
+            {/* Phone */}
             <div>
               <Label htmlFor="phone">Phone Number *</Label>
               <Input
@@ -124,10 +131,10 @@ export default function SignUpPage({ onNavigate }) {
                 required
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="Enter your phone number"
               />
             </div>
 
+            {/* Password */}
             <div>
               <Label htmlFor="password">Password *</Label>
               <Input
@@ -137,10 +144,10 @@ export default function SignUpPage({ onNavigate }) {
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Enter your password (min 6 characters)"
               />
             </div>
 
+            {/* Confirm Password */}
             <div>
               <Label htmlFor="confirmPassword">Confirm Password *</Label>
               <Input
@@ -150,7 +157,6 @@ export default function SignUpPage({ onNavigate }) {
                 required
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="Confirm your password"
               />
             </div>
 
@@ -158,8 +164,10 @@ export default function SignUpPage({ onNavigate }) {
               <div className="text-red-500 text-sm">{passwordError}</div>
             )}
 
+            {/* Location */}
             <LocationSelector onLocationChange={handleLocationChange} />
 
+            {/* Role */}
             <div>
               <Label>Role *</Label>
               <div className="flex space-x-4 mt-2">
@@ -188,14 +196,16 @@ export default function SignUpPage({ onNavigate }) {
               </div>
             </div>
 
+            {/* Submit */}
             <Button type="submit" className="w-full">
               Sign Up
             </Button>
 
+            {/* Link to Login */}
             <div className="text-center">
               <button
                 type="button"
-                onClick={() => onNavigate("login")}
+                onClick={() => router.push("/login")}
                 className="text-sm text-primary hover:underline"
               >
                 Already have an account? Login

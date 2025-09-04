@@ -25,3 +25,12 @@ export const login = async (formData) => {
     throw err.response?.data || { message: "Login failed" };
   }
 };
+
+export function logout() {
+  // clear localStorage/session
+  localStorage.removeItem("user")
+  
+  // redirect to login page (or home)
+  window.location.href = "/"
+}
+

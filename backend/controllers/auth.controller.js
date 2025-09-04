@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 // sign up
 export const signupUser = async (req, res) => {
   try {
-    const { name, email, password, phone, country, state, city, role } = req.body;
+    const { name, email, password, phone, country, state, city, role } =
+      req.body;
 
     // basic validation
     if (!name || !phone || !password) {
@@ -66,7 +67,7 @@ export const signupUser = async (req, res) => {
       user: userResponse,
     });
   } catch (error) {
-    console.error("Signup error:", error); 
+    console.error("Signup error:", error);
     if (error.code === 11000 && error.keyValue.phone) {
       return res.status(400).json({ message: "Phone number already exists" });
     }
@@ -85,7 +86,7 @@ export const loginUser = async (req, res) => {
 
     // find user either by email or phone
     const existingUser = await User.findOne({
-      $or: [{ email: identifier }, { phone: identifier }]
+      $or: [{ email: identifier }, { phone: identifier }],
     });
 
     if (!existingUser) {
@@ -111,12 +112,16 @@ export const loginUser = async (req, res) => {
       email: existingUser.email,
       phone: existingUser.phone,
       role: existingUser.role,
+      country: existingUser.country,
+      state: existingUser.state,
+      city: existingUser.city,
     };
+  
 
     res.status(200).json({
       message: "Login successful",
       token,
-      user: userResponse
+      user: userResponse,
     });
   } catch (error) {
     console.error("Login error:", error);

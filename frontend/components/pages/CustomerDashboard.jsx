@@ -1,49 +1,99 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import ServiceCard from "../common/ServiceCard"
-import { mockServices } from "../../data/mockData"
-import { Button } from "../ui/button"
-
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import ServiceCard from "../common/ServiceCard";
+import { toast } from "react-hot-toast";
+import { getService } from "../../routes/API.service";
+import { logout } from "../../routes/API.auth";
+import {
+  createBooking,
+  getMyBookings,
+  cancelBooking,
+} from "../../routes/API.booking";
 
 export default function CustomerDashboard({ user }) {
-  const [services, setServices] = useState([])
-  const [bookings, setBookings] = useState([])
+  const [services, setServices] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
+  //  Fetch available services + my bookings on mount
   useEffect(() => {
-    setServices(mockServices)
-    // Load existing bookings from localStorage
-    const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]")
-    setBookings(existingBookings)
-  }, [])
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  const handleBookService = (service) => {
-    const newBooking = {
-      id: Date.now(),
-      serviceId: service.id,
-      serviceName: service.title,
-      providerName: service.providerName,
-      providerPhone: service.phone,
-      customerName: user.name,
-      customerPhone: user.phone,
-      status: "pending",
-      bookedAt: new Date().toISOString(),
+        // Get all services
+        const serviceData = await getService("/allservices");
+        setServices(serviceData.services || []);
+        // console.log(serviceData," service data in customer ")
+
+        // Get my bookings
+        const bookingData = await getMyBookings();
+        setBookings(bookingData.bookings || []);
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  //  Book a service
+  const handleBookService = async (service) => {
+    try {
+      setBookingLoading(true);
+      await createBooking(service._id);
+
+      toast.success("Service booked successfully!");
+
+      // Update bookings after new booking
+      const bookingData = await getMyBookings();
+      setBookings(bookingData.bookings || []);
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast.error(error.response?.data?.message || "Failed to book service");
+    } finally {
+      setBookingLoading(false);
     }
+  };
 
-    const updatedBookings = [...bookings, newBooking]
-    setBookings(updatedBookings)
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings))
-    alert("Service booked successfully!")
-  }
+  //  Cancel booking
+  const handleCancelBooking = async (id) => {
+    try {
+      await cancelBooking(id);
+      toast.success("Booking cancelled");
+
+      // Remove from UI
+      setBookings((prev) => prev.filter((b) => b._id !== id));
+    } catch (error) {
+      console.error("Cancel error:", error);
+      toast.error(error.response?.data?.message || "Failed to cancel booking");
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Dashboard</h1>
-        <p className="text-gray-600">Welcome back, {user.name}! Browse and book services below.</p>
-         
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Customer Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Welcome back, {user.name}! Browse and book services below.
+          </p>
+        </div>
+        <Button
+          onClick={logout}
+          className="bg-red-500 hover:bg-red-600 text-white"
+        >
+          Logout
+        </Button>
       </div>
 
       {/* My Bookings Section */}
@@ -53,29 +103,60 @@ export default function CustomerDashboard({ user }) {
         </CardHeader>
         <CardContent>
           {bookings.length === 0 ? (
-            <p className="text-gray-500">No bookings yet. Book a service to get started!</p>
+            <p className="text-gray-500">
+              No bookings yet. Book a service to get started!
+            </p>
           ) : (
             <div className="space-y-4">
               {bookings.map((booking) => (
-                <div key={booking.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">{booking.serviceName}</h3>
-                      <p className="text-sm text-gray-600">Provider: {booking.providerName}</p>
-                      <p className="text-sm text-gray-600">Phone: {booking.providerPhone}</p>
-                      <p className="text-sm text-gray-500">Booked: {new Date(booking.bookedAt).toLocaleDateString()}</p>
-                    </div>
+                <div
+                  key={booking._id}
+                  className="border rounded-lg p-4 flex justify-between items-center"
+                >
+                  <div>
+                    <h3 className="font-semibold">
+                      {booking.serviceId?.serviceTitle}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Provider: {booking.serviceId?.userId?.name}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Phone: {booking.serviceId?.userId?.phone}
+                    </p>
+                    
+                    {/* <p className="text-sm text-gray-600">
+                     Location: {booking.serviceId?.country}, {booking.serviceId?.state},{booking.serviceId?.city}
+
+                    </p> */}
+
+                    <p className="text-sm text-gray-500">
+                      <span>
+                        {new Date(booking.bookingDate).toLocaleDateString('en-IN')}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end">
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${
+                      className={`px-3 py-1 rounded-full text-sm mb-2 ${
                         booking.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : booking.status === "accepted"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      {booking.status.charAt(0).toUpperCase() +
+                        booking.status.slice(1)}
                     </span>
+                    {booking.status === "pending" && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleCancelBooking(booking._id)}
+                      >
+                        Cancel
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -90,19 +171,27 @@ export default function CustomerDashboard({ user }) {
           <CardTitle>Available Services</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                onBook={handleBookService}
-                showBookButton={true}
-                userCountry={user.country}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-gray-500">Loading services...</p>
+          ) : services.length === 0 ? (
+            <p className="text-gray-500">
+              No services available in your area yet.
+            </p>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service, index) => (
+                <ServiceCard
+                  key={service._id || index}
+                  service={service}
+                  onBook={handleBookService}
+                  showBookButton={true}
+                  userCountry={user.country}
+                />
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

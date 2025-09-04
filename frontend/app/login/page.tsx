@@ -1,51 +1,54 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
+import { Button } from "../../components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
 import { toast } from "react-hot-toast"
 import { login } from "../../routes/API.auth"
+import { useAuth } from "../../Authcontext"
+import { useRouter } from "next/navigation"
 
-export default function LoginPage({ onNavigate, onLogin }) {
+export default function LoginPage() {
+  const { setUser } = useAuth()
+  const router = useRouter()
   const [formData, setFormData] = useState({
-    identifier: "", // Can be email or phone
+    identifier: "",
     password: "",
   })
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     })
   }
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    try {
+      const res = await login(formData) // { token, user }
 
-    // Get stored user data (in real app, this would be an API call)
-   
-      // Simple validation - check if identifier matches email or phone
-     try {
-      // 🔹 Send data to backend login API
-      const res = await login(formData)
-
-      // Save user/token in localStorage for persistence
-      
-
-      localStorage.setItem("userData", JSON.stringify(res.user))
+      localStorage.setItem("user", JSON.stringify(res.user))
       localStorage.setItem("token", res.token)
 
-      // Show success toast
+      setUser(res.user)
+
       toast.success(`Welcome back, ${res.user.name || "User"}!`)
 
-      // Trigger parent onLogin with user info
-      onLogin(res.user)
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Invalid credentials")
+      if (res.user.role === "customer") {
+        router.push("/customer-dashboard")
+      } else if (res.user.role === "provider") {
+        router.push("/provider-dashboard")
+      } else {
+        router.push("/")
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Invalid credentials")
     }
   }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
@@ -87,7 +90,7 @@ export default function LoginPage({ onNavigate, onLogin }) {
             <div className="text-center">
               <button
                 type="button"
-                onClick={() => onNavigate("signup")}
+                onClick={() => router.push("/signup")}
                 className="text-sm text-primary hover:underline"
               >
                 Don't have an account? Sign Up
