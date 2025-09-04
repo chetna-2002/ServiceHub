@@ -2,7 +2,7 @@ import axios from "axios";
 
 // ✅ Axios instance with base URL
 const API = axios.create({
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_URL
 });
 
 // ✅ Update booking status API

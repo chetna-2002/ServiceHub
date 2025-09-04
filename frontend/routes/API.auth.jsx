@@ -1,14 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3001/api/v1", // Your Express backend URL
+  baseURL: process.env.NEXT_PUBLIC_API_URL
 });
 
 // Signup request
 export const signup = async (formData) => {
   try {
     const res = await API.post("/auth/signup", formData);
-    console.log("res in APi file ", res)
+    
     return res.data; 
   } catch (err) {
     // forward backend error message

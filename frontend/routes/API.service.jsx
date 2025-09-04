@@ -2,7 +2,7 @@ import axios from "axios";
 
 // ✅ Set the correct base URL (plural 'services' to match backend routes)
 const API = axios.create({
-  baseURL: "http://localhost:3001/api/v1/service",
+  baseURL: process.env.NEXT_PUBLIC_API_URL
 });
 
 // ------------------- SERVICE API ------------------- //
@@ -11,7 +11,7 @@ const API = axios.create({
 export const createService = async (formData) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await API.post("/createservice", formData, {
+    const res = await API.post("/service/createservice", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -25,7 +25,7 @@ export const createService = async (formData) => {
 // Fetch all services
 export const getService = async () => {
   try {
-    const res = await API.get("/allservices");
+    const res = await API.get("/service/allservices");
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Fetching services failed" };
@@ -36,7 +36,7 @@ export const getService = async () => {
 export const getMyServices = async () => {
   try {
     const token = localStorage.getItem("token");
-    const res = await API.get("/myservices", {
+    const res = await API.get("/service/myservices", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ export const getMyServices = async () => {
 export const updateService = async (serviceId, formData) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await API.put(`/update/${serviceId}`, formData, {
+    const res = await API.put(`/service/update/${serviceId}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -67,7 +67,7 @@ export const updateService = async (serviceId, formData) => {
 export const deleteService = async (serviceId) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await API.delete(`/deleteservice/${serviceId}`, {
+    const res = await API.delete(`/service/deleteservice/${serviceId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
